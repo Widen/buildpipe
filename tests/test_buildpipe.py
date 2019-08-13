@@ -40,6 +40,8 @@ def steps_to_yaml(steps):
     (['foo'], ['foo'], ['foo'], False),
     # Matching tags using tag groups
     ([['foo', 'bar'], 'baz'], [['foo', 'bar']], [], True),
+    # Matching tags using tag groups
+    ([['foo', 'bar'], 'baz'], ['foo', 'bar'], [], True),
     # Matching skips using tag groups
     ([['foo', 'bar'], 'baz'], [], [['foo', 'bar']], False),
     # Non-matching tag groups despite some matching

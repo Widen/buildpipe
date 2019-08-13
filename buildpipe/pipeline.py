@@ -174,17 +174,31 @@ def validate_config(config: box.Box) -> bool:
     return True
 
 
+def _to_set_of_tuples(A):
+    result = []
+    for item in A:
+        if type(item) is list:
+            result.append(tuple(item))
+    return
+
+
 def check_tag_rules(stair_tags: TAGS, project_tags: TAGS, project_skip_tags: TAGS) -> bool:
+    stair_tags = _to_set_of_tuples(stair_tags)
+    project_tags = _to_set_of_tuples(project_tags)
+    project_skip_tags = _to_set_of_tuples(project_skip_tags)
+    # Reject any stair tags that should be skipped
+    if len(stair_tags & project_skip_tags) > 0:
+        return False
+    # Accept any star tags that have a matching project tag
+    if len(stair_tags & project_tags) > 0:
+        return True
+    # Check case where stair tags are tuples
     for stair_tag in stair_tags:
-        if stair_tag in project_skip_tags:
-            return False
-        for project_tag in project_tags:
-            if project_tag in stair_tags:
+        if type(stair_tag) is tuple:
+            if (stair_tags & project_tags) == stair_tags:
                 return True
-        else:
-            # Stair has tags but project does not have a matching tag
-            return False
-    return True
+    # Accept if there are not stair tags, else reject
+    return len(stair_tags) > 0
 
 
 def iter_stair_projects(stair: box.Box, projects: Set[box.Box]) -> Generator[box.Box, None, None]:
